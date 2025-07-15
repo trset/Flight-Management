@@ -1,8 +1,7 @@
 package server
 
 import (
-	"flight_management/routes" // adjust if your module path is different
-
+	"flight_management/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +9,7 @@ import (
 func StartServer() {
 	r := gin.Default()
 
-	// CORS setup
+	// CORS middleware
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -18,12 +17,11 @@ func StartServer() {
 		AllowCredentials: true,
 	}))
 
-	// Backend API routes
+	// API routes
 	routes.RegisterRoutes(r)
 
-	// === ✅ Serve frontend files (Air India theme) ===
-	r.StaticFile("/", "./index.html")
-	r.StaticFile("/index.html", "./index.html")
+	// ✅ Serve frontend at a different route to avoid conflict
+	r.StaticFile("/home", "./index.html")
 	r.StaticFile("/manifest.json", "./manifest.json")
 	r.StaticFile("/service-worker.js", "./service-worker.js")
 	r.StaticFile("/icon-192.png", "./icon-192.png")
