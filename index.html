@@ -2,100 +2,147 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d71920">
-  <title>Indian Airlines Manager</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Roboto&display=swap" rel="stylesheet">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="icon.png">
+  <title>Flight Manager ✈️✈️✈️</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background-color: #fdf6f0;
-      color: #222;
+    :root{
+      --deep-red: #d71920;
+      --gold: #bfa76f;
+      --cream: #f8f4ec;
+      --dark: #1a1a1a;
     }
-
+    body {
+      font-family: Georgia, 'Poppins', serif;
+      background-color: var(--cream);
+      color: var(--dark);
+      padding: 2rem 1rem;
+      max-width: 900px;
+      margin-inline: auto;
+    }
     h1 {
       text-align: center;
-      color: #c8102e;
-      font-family: 'Playfair Display', serif;
-      margin-top: 1.5rem;
+      color: var(--deep-red);
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 1rem;
-      background-color: white;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 1.5rem;
+    section {
+      background: #fff;
+      border-left: 6px solid var(--deep-red);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 8px 20px rgba(183, 0, 0, 0.08);
     }
-
-    label {
+    h2 {
+      color: var(--deep-red);
+      margin-bottom: 1rem;
+    }
+    input, button, select {
       display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-
-    select, input {
-      width: 100%;
+      margin: 0.5rem 0;
       padding: 0.6rem;
-      margin-top: 0.3rem;
+      width: 100%;
+      max-width: 300px;
+      font-size: 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-
     button {
-      background-color: #c8102e;
+      background: var(--deep-red);
       color: white;
-      padding: 0.7rem 1rem;
-      border: none;
-      border-radius: 8px;
-      margin-top: 1rem;
-      cursor: pointer;
       font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
-
     button:hover {
-      background-color: #a30e26;
+      background: #a11317;
     }
-
-    .result {
-      background-color: #fff5f5;
+    .flight-card {
+      background: #fff7f6;
+      border-left: 5px solid var(--gold);
       padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .status {
+      font-size: 0.95rem;
+      color: #b30000;
+      margin-top: 0.4rem;
+    }
+    pre {
+      background: #111;
+      color: white;
+      padding: 1rem;
+      border-radius: 6px;
       margin-top: 1rem;
-      border: 1px solid #e0c6c6;
-      border-radius: 10px;
+      overflow-x: auto;
+    }
+    @media (max-width: 600px) {
+      input, button, select {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <h1>✈️ Indian Airlines Manager </h1>
 
-  <h1>✈️ Indian Airlines Manager</h1>
-
-  <div class="container">
+  <section>
     <h2>Add Flight</h2>
-    <label for="source">Source</label>
-    <select id="source"></select>
+    <select id="src"><option value="">Select Source Airport</option></select>
+    <select id="dst"><option value="">Select Destination Airport</option></select>
+    <input id="max_limit" type="number" placeholder="Max Capacity">
+    <button onclick="createFlight()">Add Flight</button>
+    <div id="statusAdd" class="status"></div>
+  </section>
 
-    <label for="destination">Destination</label>
-    <select id="destination"></select>
-
-    <label for="capacity">Capacity</label>
-    <input type="number" id="capacity" placeholder="Enter capacity" />
-
-    <button onclick="addFlight()">Add Flight</button>
-  </div>
-
-  <div class="container">
+  <section>
     <h2>All Flights</h2>
-    <button onclick="loadFlights()">Load Flights</button>
-    <div class="result" id="flightList"></div>
-  </div>
+    <button onclick="fetchAllFlights()">Load Flights</button>
+    <div id="flights"></div>
+  </section>
+
+  <section>
+    <h2>Flight by ID</h2>
+    <input id="getId" placeholder="Flight ID">
+    <button onclick="fetchFlightById()">Get Flight</button>
+    <pre id="flightById"></pre>
+  </section>
+
+  <section>
+    <h2>Update Flight</h2>
+    <input id="updateId" placeholder="Flight ID">
+    <select id="newSrc"><option value="">New Source</option></select>
+    <select id="newDst"><option value="">New Destination</option></select>
+    <button onclick="updateFlightById()">Update Flight</button>
+    <div id="statusUpdate" class="status"></div>
+  </section>
+
+  <section>
+    <h2>Add Passengers</h2>
+    <input id="passengerId" placeholder="Flight ID">
+    <input id="numPassengers" type="number" placeholder="Number of Passengers">
+    <button onclick="addPassengersToFlight()">Add Passengers</button>
+    <div id="statusPassengers" class="status"></div>
+  </section>
+
+  <section>
+    <h2>Delete Flight</h2>
+    <input id="deleteId" placeholder="Flight ID">
+    <button onclick="deleteFlightById()">Delete Flight</button>
+    <div id="statusDelete" class="status"></div>
+  </section>
 
   <script>
-    const backendBase = "https://flight-management-1.onrender.com";
+    const base = "https://flight-management-1.onrender.com";
 
     const airports = {
       "DEL": "Indira Gandhi International Airport, Delhi",
@@ -120,61 +167,112 @@
       "NAG": "Dr. Babasaheb Ambedkar International Airport, Nagpur"
     };
 
-    const sourceSelect = document.getElementById('source');
-    const destSelect = document.getElementById('destination');
-
-    function populateDropdowns() {
+    function populateDropdown(id) {
+      const select = document.getElementById(id);
       for (const code in airports) {
-        const option1 = document.createElement('option');
-        const option2 = document.createElement('option');
-        option1.value = option2.value = code;
-        option1.textContent = `${code} - ${airports[code]}`;
-        option2.textContent = `${code} - ${airports[code]}`;
-        sourceSelect.appendChild(option1);
-        destSelect.appendChild(option2);
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = `${code} - ${airports[code]}`;
+        select.appendChild(opt);
       }
     }
 
-    async function addFlight() {
-      const source = sourceSelect.value;
-      const destination = destSelect.value;
-      const capacity = document.getElementById('capacity').value;
+    window.onload = () => {
+      populateDropdown("src");
+      populateDropdown("dst");
+      populateDropdown("newSrc");
+      populateDropdown("newDst");
+    };
 
-      const res = await fetch(`${backendBase}/flights`, {
+    function showStatus(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      setTimeout(() => el.textContent = "", 3000);
+    }
+
+    async function createFlight() {
+      const src = document.getElementById("src").value;
+      const dst = document.getElementById("dst").value;
+      const max_limit = parseInt(document.getElementById("max_limit").value);
+      if (!src || !dst || isNaN(max_limit) || max_limit <= 0) return showStatus("statusAdd", "❌ Enter valid details.");
+      const res = await fetch(base + "/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source, destination, capacity: parseInt(capacity) })
+        body: JSON.stringify({ src, dst, max_limit })
       });
-
-      const data = await res.text();
-      alert(data);
+      const data = await res.json();
+      showStatus("statusAdd", data.message || data.error);
     }
 
-    async function loadFlights() {
-      const res = await fetch(`${backendBase}/flights`);
-      const flights = await res.json();
+    async function fetchAllFlights() {
+      const res = await fetch(base + "/");
+      const data = await res.json();
+      const container = document.getElementById("flights");
+      container.innerHTML = "";
+      if (!data.flights?.length) return container.innerHTML = "<p>No flights available.</p>";
+      data.flights.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "flight-card";
+        card.innerHTML = `<strong>ID:</strong> ${f.id}<br>
+        <strong>Route:</strong> ${f.src} → ${f.dst}<br>
+        <strong>Passengers:</strong> ${f.passengers} / ${f.max_limit}<br>
+        <strong>Status:</strong> ${f.status}`;
+        container.appendChild(card);
+      });
+    }
 
-      const list = document.getElementById("flightList");
-      list.innerHTML = "";
-
-      if (flights.length === 0) {
-        list.innerHTML = "<p>No flights found.</p>";
-        return;
+    async function fetchFlightById() {
+      const id = document.getElementById("getId").value.trim();
+      const box = document.getElementById("flightById");
+      box.textContent = "";
+      if (!id) return box.textContent = "❌ Enter Flight ID.";
+      const res = await fetch(base + "/" + id);
+      const data = await res.json();
+      if (data.flight) {
+        const f = data.flight;
+        box.textContent = `✈️ ${f.src} → ${f.dst}
+Passengers: ${f.passengers} / ${f.max_limit}
+Status: ${f.status}
+ID: ${f.id}`;
+      } else {
+        box.textContent = data.error || "Flight not found.";
       }
-
-      flights.forEach(f => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-          <strong>${f.source} ➜ ${f.destination}</strong><br>
-          ✈️ Capacity: ${f.capacity} | ID: ${f.id}
-          <hr />
-        `;
-        list.appendChild(div);
-      });
     }
 
-    window.onload = populateDropdowns;
-  </script>
+    async function updateFlightById() {
+      const id = document.getElementById("updateId").value.trim();
+      const src = document.getElementById("newSrc").value;
+      const dst = document.getElementById("newDst").value;
+      if (!id || (!src && !dst)) return showStatus("statusUpdate", "❌ Provide ID and at least one new value.");
+      const res = await fetch(base + "/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ src, dst })
+      });
+      const data = await res.json();
+      showStatus("statusUpdate", data.message || data.error);
+    }
 
+    async function addPassengersToFlight() {
+      const id = document.getElementById("passengerId").value.trim();
+      const passengers = parseInt(document.getElementById("numPassengers").value);
+      if (!id || isNaN(passengers) || passengers <= 0) return showStatus("statusPassengers", "❌ Enter valid values.");
+      const res = await fetch(base + "/" + id + "/passengers", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passengers })
+      });
+      const data = await res.json();
+      showStatus("statusPassengers", data.message || data.error);
+    }
+
+    async function deleteFlightById() {
+      const id = document.getElementById("deleteId").value.trim();
+      if (!id) return showStatus("statusDelete", "❌ Enter Flight ID.");
+      const res = await fetch(base + "/" + id, { method: "DELETE" });
+      const data = await res.json();
+      showStatus("statusDelete", data.message || data.error);
+    }
+  </script>
 </body>
 </html>
