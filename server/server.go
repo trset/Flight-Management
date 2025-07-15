@@ -10,16 +10,24 @@ import (
 func StartServer() {
 	r := gin.Default()
 
-	// Add CORS middleware
+	// CORS setup
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Allow all origins for dev (you can restrict in prod)
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		AllowCredentials: true,
 	}))
 
-	// Register routes
+	// Backend API routes
 	routes.RegisterRoutes(r)
+
+	// === ✅ Serve frontend files (Air India theme) ===
+	r.StaticFile("/", "./index.html")
+	r.StaticFile("/index.html", "./index.html")
+	r.StaticFile("/manifest.json", "./manifest.json")
+	r.StaticFile("/service-worker.js", "./service-worker.js")
+	r.StaticFile("/icon-192.png", "./icon-192.png")
+	r.StaticFile("/icon-512.png", "./icon-512.png")
 
 	// Start server
 	if err := r.Run(":8080"); err != nil {
